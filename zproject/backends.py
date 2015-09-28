@@ -158,3 +158,14 @@ class DevAuthBackend(ZulipAuthMixin):
             return get_user_profile_by_email(username)
         except UserProfile.DoesNotExist:
             return None
+
+class EveSSOBackend(ZulipAuthMixin):
+    def authenticate(self, eve_userdata=None, token=None, email=None):
+        character_id = eve_userdata.get('CharacterID')
+        character_owner_hash = eve_userdata.get('CharacterOwnerHash')
+        character_name = eve_userdata.get('CharacterName')
+
+        try:
+            return get_user_profile_by_email(email)
+        except UserProfile.DoesNotExist:
+            return None

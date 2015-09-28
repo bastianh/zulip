@@ -52,6 +52,7 @@ autofocus('#id_username');
     <h3 class="login-page-header">You look familiar.</h3>
     {% endif %}
 
+    <h4 class="login-page-subheader"><a href="{% url 'zerver.views.start_eve_sso' %}" class=""> <img src="https://images.contentful.com/idjq7aai9ylm/4fSjj56uD6CYwYyus4KmES/4f6385c91e6de56274d99496e6adebab/EVE_SSO_Login_Buttons_Large_Black.png?w=270&h=45" alt=""> </a></h4>
 {% if only_sso %}
     {% comment %}SSO users don't have a password.{% endcomment %}
 
@@ -144,6 +145,8 @@ autofocus('#id_username');
     or <a href="{% url 'zerver.views.start_google_oauth2' %}" class="login-google-button zocial google">Sign in with Google</a>
     </div>
     {% endif %}
+
+
 
 {% endif %}
 

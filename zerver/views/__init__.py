@@ -642,6 +642,48 @@ def remote_user_jwt(request):
 
     return login_or_register_remote_user(request, email, user_profile, remote_user)
 
+from requests_oauthlib import OAuth2Session
+
+def oauth_object(request, state=None):
+    return OAuth2Session("7803b6199fb5453e9225d267cXXX",
+                         state=state,
+                         scope=None,
+                         redirect_uri="http://5.9.43.141:9991/accounts/login/eve/callback/")
+
+def start_eve_sso(request):
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    authorization_url, state = oauth_object(request).authorization_url(
+            "https://login.eveonline.com/oauth/authorize/")
+    request.session['eve_oauth_state'] = state
+    return redirect(authorization_url)
+
+def finish_eve_sso(request):
+    from django.utils.text import slugify
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    oauth = oauth_object(request, request.session.get('eve_oauth_state', '__missing_state'))
+
+    try:
+        del request.session['eve_oauth_state']
+    except KeyError:
+        pass
+
+    try:
+        token = oauth.fetch_token("https://login.eveonline.com/oauth/token",
+                                  client_secret="gyvmHb7L16yd5Fze4fW9rtDGFUh7cbDuTkkXXX",
+                                  authorization_response=request.get_full_path())
+
+        info = oauth.get("https://login.eveonline.com/oauth/verify")
+
+        #user_profile = authenticate(eve_userdata=info.json(), token=token)
+        charname = info.json().get("CharacterName")
+        email = slugify(charname)+"@zulip.com"
+        user_profile = authenticate(eve_userdata=info.json(), token=token, email=email)
+        return login_or_register_remote_user(request, email, user_profile, charname)
+
+    except Exception as e:
+        raise e
+
+
 def google_oauth2_csrf(request, value):
     return hmac.new(get_token(request).encode('utf-8'), value, hashlib.sha256).hexdigest()
 
@@ -664,6 +706,8 @@ def start_google_oauth2(request):
         'state': csrf_state,
     }
     return redirect(uri + urllib.urlencode(prams))
+
+
 
 def finish_google_oauth2(request):
     error = request.GET.get('error')

@@ -87,6 +87,7 @@ else:
     # Add some of the below if you're testing other backends
     # AUTHENTICATION_BACKENDS = ('zproject.backends.EmailAuthBackend',
     #                            'zproject.backends.GoogleMobileOauth2Backend',)
+    AUTHENTICATION_BACKENDS = ('zproject.backends.EveSSOBackend',)
     EXTERNAL_URI_SCHEME = "http://"
     EMAIL_GATEWAY_PATTERN = "%s@" + EXTERNAL_HOST
     ADMIN_DOMAIN = "zulip.com"
