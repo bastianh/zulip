@@ -670,7 +670,7 @@ def finish_eve_sso(request):
     try:
         token = oauth.fetch_token("https://login.eveonline.com/oauth/token",
                                   client_secret="gyvmHb7L16yd5Fze4fW9rtDGFUh7cbDuTkkXXX",
-                                  authorization_response=request.get_full_path())
+                                  authorization_response=request.build_absolute_uri())
 
         info = oauth.get("https://login.eveonline.com/oauth/verify")
 
